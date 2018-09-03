@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <script src="js/react.min.js"></script>
+    <script src="js/react-dom.min.js"></script>
+    <script src="js/babel.min.js"></script>
+    <script type="text/babel">
+
+        class RegistForm extends React.Component{
+
+            constructor(props) {
+                super(props)
+                this.state={
+                    messageusername:'',
+                    messagepassword:'',
+                    username:'',
+                    pwd:"",
+                }
+                this.handleChangeUserName  = this.handleChangeUserName.bind(this)
+                this.handleChangePassWord  = this.handleChangePassWord.bind(this)
+                this.handleClick = this.handleClick.bind(this)
+            }
+
+            handleChangeUserName(event) {
+                const username = event.target.value
+                this.setState({username})
+            }
+
+            handleChangePassWord(event) {
+                const pwd = event.target.value
+                this.setState({pwd})
+            }
+
+            handleClick(){
+
+                const username = this.state.username
+                const pwd = this.state.pwd
+
+                let formData = new FormData();
+                formData.append("username",username);
+                formData.append("password",pwd);
+                    fetch("../loginUser",{
+                    method: 'post',
+                    headers: {},
+                    body: formData
+                })
+                    .then(reponse =>{
+                       return  reponse.json()
+                    })
+                    .then(data =>{
+                        console.log(data);
+                        this.setState({
+                            messageusername:data.message,
+                            }
+                        )
+                        if (data.flag == "1") {
+                            window.location.href='success.html';
+                        }
+                    })
+
+            }
+
+            render(){
+                return(
+                    <div>
+                        <form >
+                            <div>
+                                输入账户:<input type="text" value={this.state.username} onChange={this.handleChangeUserName} ></input>
+                                <span>{this.state.messageusername}</span>
+                            </div>
+                            <br/>
+                            <div>
+                                输入密码:<input type="password" value={this.state.pwd} onChange={this.handleChangePassWord}> </input>
+                                <span>{this.state.messageusername}</span>
+                            </div>
+                            <button type="button" onClick={this.handleClick}>登录</button>
+                        </form>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<RegistForm/>,document.getElementById('app')
+        );
+    </script>
+</head>
+<body>
+<!--在这里不能声明html-->
+    <div id="app"></div>
+</body>
+</html>

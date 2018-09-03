@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <script src="js/react.min.js"></script>
+    <script src="js/react-dom.min.js"></script>
+    <script src="js/babel.min.js"></script>
+    <script type="text/babel">
+
+        class RegistForm extends React.Component{
+
+            constructor(props) {
+                super(props)
+                this.state={
+                    messageusername:'',
+                    messagepassword:'',
+                    username:'',
+                    pwd1:"",
+                    pwd2:""
+                }
+                this.handleChangeUserName  = this.handleChangeUserName.bind(this)
+                this.handleChangePassWord1  = this.handleChangePassWord1.bind(this)
+                this.handleChangePassWord2  = this.handleChangePassWord2.bind(this)
+                this.handleBulrUserName  = this.handleBulrUserName.bind(this)
+                this.handleClick = this.handleClick.bind(this)
+            }
+
+            handleChangeUserName(event) {
+                const username = event.target.value
+                this.setState({username})
+            }
+
+            handleChangePassWord1(event) {
+                const pwd1 = event.target.value
+                this.setState({pwd1})
+            }
+
+            handleChangePassWord2(event) {
+                const pwd2 = event.target.value
+                this.setState({pwd2})
+            }
+
+            handleBulrUserName(event) {
+
+                const username = event.target.value
+
+                let formData = new FormData();
+                formData.append("username",username);
+
+                fetch("../judgeUserName",{
+                    method: 'post',
+                    headers: {},
+                    body: formData
+                })
+                    .then(reponse =>{
+                        return  reponse.json()
+                    })
+                    .then(data =>{
+                        console.log(data);
+                        this.setState({
+                            messageusername:data.message,
+                            }
+                        )
+                    })
+            }
+
+            handleClick(){
+
+                const username = this.state.username
+                const pwd1 = this.state.pwd1
+                const pwd2 = this.state.pwd2
+
+                let formData = new FormData();
+                formData.append("username",username);
+                formData.append("pwd1",pwd1);
+                formData.append("pwd2",pwd2)
+
+                    fetch("../registerUser",{
+                    method: 'post',
+                    headers: {},
+                    body: formData
+                })
+                    .then(reponse =>{
+                       return  reponse.json()
+                    })
+                    .then(data =>{
+                        console.log(data);
+                        this.setState({
+                            messagepassword:data.passwordMessage,
+                            }
+                        )
+
+                        if (data.flag == "1") {
+                            window.location.href='login.html';
+                        }
+
+                    })
+
+            }
+
+            render(){
+                return(
+                    <div>
+                        <form >
+                            <div>
+                                <font size="2" color="blue">请输入10-20位数字或英文字母</font><br/>
+                            账户:<input type="text" value={this.state.username} onChange={this.handleChangeUserName} onBlur ={this.handleBulrUserName}></input>
+                                <span>{this.state.messageusername}</span>
+                            </div>
+                            <br/>
+                            <div>
+                                <font size="2" color="blue">请输入6位数字</font><br/>
+                                输入密码:<input type="password" value={this.state.pwd1} onChange={this.handleChangePassWord1}> </input>
+                                <span>{this.state.messagepassword}</span>
+                            </div>
+                            <div>
+                                确认密码:<input type="password" value={this.state.pwd2} onChange={this.handleChangePassWord2}> </input>
+                            </div>
+                            <br/>
+                            <button type="button" onClick={this.handleClick}>注册</button>
+                        </form>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<RegistForm/>,document.getElementById('app')
+        );
+    </script>
+</head>
+<body>
+<!--在这里不能声明html-->
+    <div id="app"></div>
+</body>
+</html>
